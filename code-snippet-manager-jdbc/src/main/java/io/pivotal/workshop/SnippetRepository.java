@@ -5,6 +5,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static java.util.UUID.randomUUID;
@@ -38,8 +40,31 @@ public class SnippetRepository {
     private final String SQL_QUERY_ALL = "SELECT * FROM snippet";
 
     public List<SnippetRecord> findAll() {
-        return jdbcTemplate.query(SQL_QUERY_ALL,
-                rowMapper);
+        return jdbcTemplate.query(SQL_QUERY_ALL, rowMapper);
+    }
+
+    public List<SnippetRecord> findAll(Date start, Date end) {
+        if (start == null && end == null) {
+            return findAll();
+        }
+
+        String query = SQL_QUERY_ALL + " WHERE";
+        ArrayList<Object> filters = new ArrayList<>();
+        if (start != null) {
+            query += " created >= DATE(?)";
+            filters.add(start);
+
+            if (end != null) {
+                query += " AND";
+            }
+        }
+
+        if (end != null) {
+            query += " created <= DATE(?)";
+            filters.add(end);
+        }
+
+        return jdbcTemplate.query(query, filters.toArray(), rowMapper);
     }
 
     private final String SQL_QUERY_BY_ID = "SELECT * FROM snippet WHERE id = ?";
@@ -47,4 +72,5 @@ public class SnippetRepository {
     public SnippetRecord findOne(String id) {
         return jdbcTemplate.queryForObject(SQL_QUERY_BY_ID, new Object[]{id}, rowMapper);
     }
+
 }

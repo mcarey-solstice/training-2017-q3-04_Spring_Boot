@@ -2,6 +2,9 @@
 #
 ##
 
+START = 10/1/2027
+END = 10/31/2027
+
 .PHONY: *
 
 build: db
@@ -15,6 +18,17 @@ bootRun: db
 request:
 	curl -s localhost:8080/snippets
 # request
+
+filtered_request:
+	@echo "---- Start only ----"
+	curl -s localhost:8080/snippets?start=2027-10-01
+	@echo
+	@echo "---- End only ----"
+	curl -s localhost:8080/snippets?end=2027-10-31
+	@echo
+	@echo "---- Both ----"
+	curl -s localhost:8080/snippets?start=2027-10-01\&end=2027-10-31
+# filtered_request
 
 snippet:
 	curl -sX POST -H 'Content-Type: application/json' -d '{"title": "PHP: Hello World", "code": "<?php echo \"Hello World\"; ?>"}' localhost:8080/snippets

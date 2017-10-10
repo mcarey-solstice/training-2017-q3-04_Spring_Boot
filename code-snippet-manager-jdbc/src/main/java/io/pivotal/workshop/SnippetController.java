@@ -1,5 +1,6 @@
 package io.pivotal.workshop;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -16,6 +17,7 @@ public class SnippetController {
     private final SnippetRepository snippetRepository;
     private final SnippetPresenter snippetPresenter;
 
+    @Autowired
     public SnippetController(SnippetRepository snippetRepository, SnippetPresenter snippetPresenter) {
         this.snippetRepository = snippetRepository;
         this.snippetPresenter = snippetPresenter;

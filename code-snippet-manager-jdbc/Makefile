@@ -4,11 +4,11 @@
 
 .PHONY: *
 
-build:
+build: db
 	./gradlew build
 # build
 
-bootRun:
+bootRun: db
 	./gradlew bootRun
 # bootRun
 
@@ -17,7 +17,17 @@ request:
 # request
 
 snippet:
-	curl -sX POST -d 'title=PHP%3A%20Hello%20World&code=%3C%3Fphp%20echo%20%22Hello%20World%22%3B%20%3F%3E' localhost:8080/snippets
+	curl -sX POST -H 'Content-Type: application/json' -d '{"title": "PHP: Hello World", "code": "<?php echo \"Hello World\"; ?>"}' localhost:8080/snippets
 # snippet
+
+db:
+	[ -s db.tmp ] || docker run -d -p 3306:3306 -e MYSQL_RANDOM_ROOT_PASSWORD=yes -e MYSQL_USER=springboot -e MYSQL_PASSWORD=workshop -e MYSQL_DATABASE=testdb mysql:latest > db.tmp
+	[ `docker inspect -f {{.State.Running}} $$(cat db.tmp)` = "false" ] || docker start $$(cat db.tmp)
+# db
+
+stop:
+	[ -s db.tmp ] && docker stop $$(cat db.tmp)
+	rm db.tmp
+# stop
 
 # Makefile
